@@ -16,7 +16,7 @@ class SCIP_CMD(pulp.solvers.LpSolver_CMD):
     def actualSolve(self, lp):
         """Solve a well formulated lp problem"""
         if not self.executable(self.path):
-            raise PulpSolverError("PuLP: cannot execute "+self.path)
+            raise pulp.PulpSolverError("PuLP: cannot execute "+self.path)
         if not self.keepFiles:
             pid = os.getpid()
             tmpLp = os.path.join(self.tmpDir, "%d-pulp.lp" % pid)
@@ -36,18 +36,18 @@ class SCIP_CMD(pulp.solvers.LpSolver_CMD):
             rc = subprocess.call(proc, stdout = pipe,
                              stderr = pipe)
             if rc:
-                raise PulpSolverError("PuLP: Error while trying to execute "+self.path)
+                raise pulp.PulpSolverError("PuLP: Error while trying to execute "+self.path)
         else:
             if os.name != 'nt':
                 rc = os.spawnvp(os.P_WAIT, self.path, proc)
             else:
                 rc = os.spawnv(os.P_WAIT, self.executable(self.path), proc)
             if rc == 127:
-                raise PulpSolverError("PuLP: Error while trying to execute "+self.path)
+                raise pulp.PulpSolverError("PuLP: Error while trying to execute "+self.path)
         self.solution_time += clock()
 
         if not os.path.exists(tmpSol):
-            raise PulpSolverError("PuLP: Error while executing "+self.path)
+            raise pulp.PulpSolverError("PuLP: Error while executing "+self.path)
         lp.status, values = self.readsol(tmpSol)
         lp.assignVarsVals(values)
         if not self.keepFiles:
